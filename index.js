@@ -1,42 +1,26 @@
-
-//DECLARE THE NEEDED MODULES
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
 const port = 8080;
 
-//CREATE THE SERVER
-http.createServer(function (request, response) {
+//Send HTML intended files
+app.get("/", (request, response) => {
+    response.sendFile(__dirname + '/index.html');
+});
 
-  //SET THE HEADER
-  response.setHeader('Content-Type', 'text/html');
-  
-  
-  let path = './Basic Server Setup/'
+app.get("/about", (request, response) => {
+    response.sendFile(__dirname + '/about.html');
+});
 
-  //CREATE SWITCH CASE ON request.url
-  switch(request.url){
-    case '/' : path += 'index.html';
-               break;
-    case '/about' : path += 'about.html';
-                    break;
-    case 'contact' : path += 'contact.html';
-                     break;
-    default: path += '404.html';
-             break;
+app.get("/contact", (request, response) => {
+    response.sendFile(__dirname + '/contact.html');
+});
 
-  }
+//Error handling
+app.use((err, request, response, next) => {
+    console.error(err.stack);
+    response.status(500).sendFile(__dirname + '/404.html'); 
+});
 
-  //READ THE PATH
-  fs.readFile(path,(error,data) => {
-    if(error){
-        console.log(error);
-        response.end();
-    }
-    else{
-        response.end(data);
-    }
-  })
-
-}).listen(8080);
-
-console.log('Server running at http://localhost:8080/');
+app.listen(port, () => {
+    console.log(`App listening to http://localhost:${port}/`);
+});
